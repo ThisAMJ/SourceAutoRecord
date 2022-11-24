@@ -217,6 +217,13 @@ ON_EVENT(SESSION_START) {
 		}
 		sv_cheats.SetValue(sv_cheats.GetString());
 	}
+	
+	if (engine->GetCurrentMapName() == "mp_coop_start" && !engine->IsOrange()) {
+		sv_cheats.ThisPtr()->m_nValue = 1;
+		engine->ExecuteCommand("ent_fire teleport_start enable; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill; ent_fire pclip_tube_block_3 kill; ent_fire pclip_tube_block_1 kill", true);
+		engine->ExecuteCommand("ent_fire @global_no_pinging_blue TurnOff; ent_fire @global_no_pinging_orange TurnOff; ent_fire pclip_tube_block_2 kill", true);
+		sv_cheats.SetValue(sv_cheats.GetString());
+	}
 }
 
 static int getCurrentTick() {
@@ -254,7 +261,7 @@ static void sendCoopPacket(PacketType t, std::string *splitName = NULL, int newS
 	char *buf = (char *)malloc(size);
 
 	buf[0] = (char)t;
-	*(int *)(buf + 1) = getCurrentTick();
+	*(int *)(buf + 1) = SpeedrunTimer::GetSegmentTicks();
 
 	char *ptr = buf + 5;
 
@@ -302,9 +309,10 @@ int SpeedrunTimer::GetSegmentTicks() {
 		if (sar_speedrun_skip_cutscenes.GetBool() && sar.game->GetVersion() == SourceGame_Portal2 && !Game::IsSpeedrunMod()) {
 			if (g_speedrun.lastMap == "sp_a2_bts6") return 3112;
 			else if (g_speedrun.lastMap == "sp_a3_00") return 4666;
+			else if (g_speedrun.lastMap == "mp_coop_start" && !engine->IsOrange()) ticks += 2705;
 		}
 
-		ticks += getCurrentTick() - g_speedrun.base;
+		ticks += getCurrentTick() - (!engine->IsOrange()) * g_speedrun.base;
 	}
 
 	if (ticks < 0) {
