@@ -48,6 +48,10 @@
 #define RESET_COOP_PROGRESS_MESSAGE_TYPE "coop-reset"
 #define CM_FLAGS_MESSAGE_TYPE "cm-flags"
 
+#ifdef _WIN32
+#	define strcasecmp _stricmp
+#endif
+
 Variable sv_cheats;
 Variable sv_footsteps;
 Variable sv_alternateticks;
@@ -502,6 +506,8 @@ static void __cdecl AcceptInput_Hook(void *thisptr, const char *inputName, void 
 	std::optional<int> activatorSlot;
 
 	if (activator && server->IsPlayer(activator)) {
+		if (!strcasecmp(inputName, "command")) return;
+		if (!strcasecmp(inputName, "runscriptcode")) return;
 		activatorSlot = server->GetSplitScreenPlayerSlot(activator);
 	}
 
