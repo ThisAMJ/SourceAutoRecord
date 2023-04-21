@@ -38,6 +38,7 @@ namespace SpeedrunTimer {
 	void CategoryChanged();
 };  // namespace SpeedrunTimer
 
+extern Variable sar_speedrun_skip_cutscenes_method;
 extern Variable sar_speedrun_skip_cutscenes;
 extern Variable sar_speedrun_smartsplit;
 extern Variable sar_speedrun_time_pauses;

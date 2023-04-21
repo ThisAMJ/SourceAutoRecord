@@ -220,8 +220,28 @@ ON_EVENT(SESSION_START) {
 	
 	if (engine->GetCurrentMapName() == "mp_coop_start" && !engine->IsOrange()) {
 		sv_cheats.ThisPtr()->m_nValue = 1;
-		engine->ExecuteCommand("ent_fire teleport_start enable; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill", true);
-		engine->ExecuteCommand("ent_fire pclip_tube_block_3 kill; ent_fire pclip_tube_block_1 kill; ent_fire pclip_tube_block_2 kill", true);
+		switch (sar_speedrun_skip_cutscenes_method.GetInt()) {
+			case 0: 
+				engine->ExecuteCommand("ent_fire teleport_start enable; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill", true);
+				engine->ExecuteCommand("ent_fire pclip_tube_block_3 kill; ent_fire pclip_tube_block_1 kill; ent_fire pclip_tube_block_2 kill", true);
+				break;
+			case 1:
+				engine->ExecuteCommand("ent_fire teleport_start enable; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill", true);
+				engine->ExecuteCommand("ent_fire pclip_tube_block_3 kill; ent_fire script_ping_select_test RunScriptCode \"SelectChoicesBlueStart()\"", true);
+				break;
+			case 2:
+				engine->ExecuteCommand("ent_fire teleport_start enable; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill", true);
+				engine->ExecuteCommand("ent_fire pclip_tube_block_3 kill; ent_fire pclip_tube_block_1 kill; ent_fire script_ping_select_test RunScriptCode \"SelectChoicesOrangeStart()\"", true);
+				break;
+			case 3:
+				engine->ExecuteCommand("ent_fire teleport_start kill; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill", true);
+				engine->ExecuteCommand("hwait 101 \"cmd1 setpos_exact -9896 -4400 1960.031; cmd2 setpos_exact -10056 -4400 1960.031\"; ent_fire script_ping_select_test RunScriptCode \"SelectChoicesBlueStart()\"", true);
+				break;
+			case 4:
+				engine->ExecuteCommand("ent_fire teleport_start kill; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill", true);
+				engine->ExecuteCommand("hwait 101 \"cmd1 setpos_exact -9896 -4400 936.031; cmd2 setpos_exact -10056 -4400 936.031\"; ent_fire script_ping_select_test RunScriptCode \"SelectChoicesOrangeStart()\"", true);
+				break;
+		} 
 		sv_cheats.SetValue(sv_cheats.GetString());
 	}
 }
@@ -822,7 +842,7 @@ float SpeedrunTimer::UnFormat(const std::string &formatted_time) {
 }
 
 // }}}
-
+Variable sar_speedrun_skip_cutscenes_method("sar_speedrun_skip_cutscenes_method", "0", 0, 4, "Method to use when skipping Calibration cutscene.\n0 = Fall through\n1 = Blue ping (fall)\n2 = Orange ping (fall)\n3 = Blue ping (tp)\n4 = Orange ping (tp)\n");
 Variable sar_speedrun_skip_cutscenes("sar_speedrun_skip_cutscenes", "0", "Skip Tube Ride and Long Fall in Portal 2.\n");
 Variable sar_speedrun_smartsplit("sar_speedrun_smartsplit", "1", "Only split the speedrun timer a maximum of once per map.\n");
 Variable sar_speedrun_time_pauses("sar_speedrun_time_pauses", "0", "Include time spent paused in the speedrun timer.\n");
