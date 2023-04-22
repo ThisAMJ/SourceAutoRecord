@@ -228,8 +228,8 @@ void InitSpeedrunCategoriesTo(std::map<std::string, SpeedrunCategory> *cats, std
 		*defaultCat = "Singleplayer";
 		*cats = {
 			{"Singleplayer", {{"Container Ride Start", "Vault Start", "Vault Save Start", "Moon Shot"}}},
-			{"Coop", {{"Coop Start", "Coop Fall Start", "Coop Course 5 End"}}},
-			{"Coop AC", {{"Coop Start", "Coop Fall Start", "Coop Course 6 End"}}},
+			{"Coop", {{"Coop Start", "Coop Blue Ping Start", "Coop Orange Ping Start", "Coop Fall Start", "Coop Course 5 End"}}},
+			{"Coop AC", {{"Coop Start", "Coop Blue Ping Start", "Coop Orange Ping Start", "Coop Fall Start", "Coop Course 6 End"}}},
 		};
 		*rules = {
 			{
@@ -295,6 +295,32 @@ void InitSpeedrunCategoriesTo(std::map<std::string, SpeedrunCategory> *cats, std
 						"",
 						"__MovieFinished",
 						"",
+					}),
+			},
+			{
+				"Coop Blue Ping Start",
+				SpeedrunRule(
+					RuleAction::START,
+					"mp_coop_start",
+					EntityInputRule{
+						ENTRULE_TARGETNAME,
+						"@glados",
+						"",
+						"RunScriptCode",
+						"GladosPlayVcd(32)",
+					}),
+			},
+			{
+				"Coop Orange Ping Start",
+				SpeedrunRule(
+					RuleAction::START,
+					"mp_coop_start",
+					EntityInputRule{
+						ENTRULE_TARGETNAME,
+						"@glados",
+						"",
+						"RunScriptCode",
+						"GladosPlayVcd(34)",
 					}),
 			},
 			{
