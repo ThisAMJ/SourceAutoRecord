@@ -882,7 +882,7 @@ float SpeedrunTimer::UnFormat(const std::string &formatted_time) {
 }
 
 // }}}
-Variable sar_speedrun_skip_cutscenes_method("sar_speedrun_skip_cutscenes_method", "0", 0, 5, "Method to use when skipping Calibration cutscene.\n0 = Fall through\n1 = Blue ping (fall)\n2 = Orange ping (fall)\n3 = Blue ping (tp)\n4 = Orange ping (tp)\n5 = Sear fall through\n");
+Variable sar_speedrun_skip_cutscenes_method("sar_speedrun_skip_cutscenes_method", "0", 0, 5, "Method to use when skipping Calibration cutscene.\n0 = Fall through\n1 = Blue ping (fall)\n2 = Orange ping (fall)\n3 = Blue ping (tp)\n4 = Orange ping (tp)\n5 = TP down and *then* fall through\n");
 Variable sar_speedrun_skip_cutscenes("sar_speedrun_skip_cutscenes", "0", "Skip Tube Ride and Long Fall in Portal 2.\n");
 Variable sar_speedrun_smartsplit("sar_speedrun_smartsplit", "1", "Only split the speedrun timer a maximum of once per map.\n");
 Variable sar_speedrun_time_pauses("sar_speedrun_time_pauses", "0", "Include time spent paused in the speedrun timer.\n");
