@@ -226,22 +226,19 @@ ON_EVENT(SESSION_START) {
 		sv_cheats.ThisPtr()->m_nValue = 1;
 		engine->ExecuteCommand("ent_fire teleport_start enable; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill; ent_fire pclip_tube_block_3 kill", true);
 		switch (sar_speedrun_skip_cutscenes_method.GetInt()) {
-			case 0: 
+			case 1: 
 				engine->ExecuteCommand("ent_fire pclip_tube_block_1 kill; ent_fire pclip_tube_block_2 kill", true);
 				break;
-			case 1:
+			case 2:
+			case 4:
 				engine->ExecuteCommand("ent_fire script_ping_select_test RunScriptCode \"SelectChoicesBlueStart()\"", true);
 				break;
-			case 2:
+			case 3:
+			case 5:
 				engine->ExecuteCommand("ent_fire pclip_tube_block_1 kill; ent_fire script_ping_select_test RunScriptCode \"SelectChoicesOrangeStart()\"", true);
 				break;
-			case 3:
-				engine->ExecuteCommand("hwait 101 \"cmd1 setpos_exact -9896 -4400 1960.031; cmd2 setpos_exact -10056 -4400 1960.031\"; ent_fire script_ping_select_test RunScriptCode \"SelectChoicesBlueStart()\"", true);
-				break;
-			case 4:
-				engine->ExecuteCommand("ent_fire pclip_tube_block_1 kill; hwait 101 \"cmd1 setpos_exact -9896 -4400 936.031; cmd2 setpos_exact -10056 -4400 936.031\"; ent_fire script_ping_select_test RunScriptCode \"SelectChoicesOrangeStart()\"", true);
-				break;
-			case 5:
+			case 6:
+			case 7:
 				engine->ExecuteCommand("ent_fire pclip_tube_block_1 kill", true);
 				break;
 		} 
@@ -253,14 +250,41 @@ ON_EVENT(PRE_TICK) {
 	if (engine->GetCurrentMapName() == "mp_coop_start"
 		&& !engine->IsOrange()
 		&& sar_speedrun_skip_cutscenes.GetBool()
-		&& sar_speedrun_skip_cutscenes_method.GetInt() == 5
 		&& !g_cutsceneskipdone)
 	{
-		if (server->GetAbsOrigin(server->GetPlayer(1)).z < 3047) {
-			sv_cheats.ThisPtr()->m_nValue = 1;
-			engine->ExecuteCommand("cmd1 setpos_exact -9896 -4400 936.031; cmd2 setpos_exact -10056 -4400 936.031; ent_fire relay_ping_2_move_on Trigger", true);
-			sv_cheats.SetValue(sv_cheats.GetString());
-			g_cutsceneskipdone = true;
+		switch (sar_speedrun_skip_cutscenes_method.GetInt()) {
+			case 4:
+				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 3047) {
+					sv_cheats.ThisPtr()->m_nValue = 1;
+					engine->ExecuteCommand("cmd1 setpos_exact -9896 -4400 1960.031; cmd2 setpos_exact -10056 -4400 1960.031", true);
+					sv_cheats.SetValue(sv_cheats.GetString());
+					g_cutsceneskipdone = true;
+				}
+				break;
+			case 5:
+				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 3047) {
+					sv_cheats.ThisPtr()->m_nValue = 1;
+					engine->ExecuteCommand("cmd1 setpos_exact -9896 -4400 936.031; cmd2 setpos_exact -10056 -4400 936.031", true);
+					sv_cheats.SetValue(sv_cheats.GetString());
+					g_cutsceneskipdone = true;
+				}
+				break;
+			case 6:
+				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 940) {
+					sv_cheats.ThisPtr()->m_nValue = 1;
+					engine->ExecuteCommand("ent_fire relay_ping_2_move_on Trigger; sar_toast_create speedrun \"Speedrun *could* start now\"", true);
+					sv_cheats.SetValue(sv_cheats.GetString());
+					g_cutsceneskipdone = true;
+				}
+				break;
+			case 7:
+				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 3047) {
+					sv_cheats.ThisPtr()->m_nValue = 1;
+					engine->ExecuteCommand("cmd1 setpos_exact -9896 -4400 936.031; cmd2 setpos_exact -10056 -4400 936.031; ent_fire relay_ping_2_move_on Trigger; sar_toast_create speedrun \"Speedrun *could* start now\"", true);
+					sv_cheats.SetValue(sv_cheats.GetString());
+					g_cutsceneskipdone = true;
+				}
+				break;
 		}
 	}
 
@@ -271,7 +295,7 @@ ON_EVENT(SESSION_START) {
 	if (engine->GetCurrentMapName() == "mp_coop_start" && !engine->IsOrange()) {
 		sv_cheats.ThisPtr()->m_nValue = 1;
 		engine->ExecuteCommand("ent_fire @global_no_pinging_blue TurnOff", true);
-		if (sar_speedrun_skip_cutscenes.GetBool() && (sar_speedrun_skip_cutscenes_method.GetInt() != 1 && sar_speedrun_skip_cutscenes_method.GetInt() != 3)) {
+		if (sar_speedrun_skip_cutscenes.GetBool() && (sar_speedrun_skip_cutscenes_method.GetInt() != 2 && sar_speedrun_skip_cutscenes_method.GetInt() != 4)) {
 			engine->ExecuteCommand("ent_fire @global_no_pinging_orange TurnOff", true);
 		} else {
 			engine->ExecuteCommand("ent_fire @global_no_pinging_orange TurnOn", true); // Don't allow orange the ability to ping too early
@@ -365,16 +389,17 @@ int SpeedrunTimer::GetSegmentTicks() {
 			else if (g_speedrun.lastMap == "sp_a3_00") return 4666;
 			else if (g_speedrun.lastMap == "mp_coop_start" && !engine->IsOrange()) {
 				switch (sar_speedrun_skip_cutscenes_method.GetInt()) {
-					case 0:
-					case 5:
-						ticks += 2705;
-						break;
 					case 1:
-					case 3:
-						ticks += 1403;
+					case 6:
+					case 7:
+						ticks += 2705;
 						break;
 					case 2:
 					case 4:
+						ticks += 1403;
+						break;
+					case 3:
+					case 5:
 						ticks += 2085;
 						break;
 				}
@@ -882,7 +907,7 @@ float SpeedrunTimer::UnFormat(const std::string &formatted_time) {
 }
 
 // }}}
-Variable sar_speedrun_skip_cutscenes_method("sar_speedrun_skip_cutscenes_method", "0", 0, 5, "Method to use when skipping Calibration cutscene.\n0 = Fall through\n1 = Blue ping (fall)\n2 = Orange ping (fall)\n3 = Blue ping (tp)\n4 = Orange ping (tp)\n5 = TP down and *then* fall through\n");
+Variable sar_speedrun_skip_cutscenes_method("sar_speedrun_skip_cutscenes_method", "1", 1, 7, "Method to use when skipping Calibration cutscene.\n1 = Fall through\n2 = Blue ping (fall)\n3 = Orange ping (fall)\n4 = Blue ping (tp)\n5 = Orange ping (tp)\n6 = Fall to orange then fall through\n7 = TP to orange then fall through\n");
 Variable sar_speedrun_skip_cutscenes("sar_speedrun_skip_cutscenes", "0", "Skip Tube Ride and Long Fall in Portal 2.\n");
 Variable sar_speedrun_smartsplit("sar_speedrun_smartsplit", "1", "Only split the speedrun timer a maximum of once per map.\n");
 Variable sar_speedrun_time_pauses("sar_speedrun_time_pauses", "0", "Include time spent paused in the speedrun timer.\n");
