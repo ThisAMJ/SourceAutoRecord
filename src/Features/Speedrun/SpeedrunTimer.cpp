@@ -256,7 +256,7 @@ ON_EVENT(PRE_TICK) {
 			case 4:
 				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 3047) {
 					sv_cheats.ThisPtr()->m_nValue = 1;
-					engine->ExecuteCommand("cmd1 setpos_exact -9896 -4400 1960.031; cmd2 setpos_exact -10056 -4400 1960.031", true);
+					engine->ExecuteCommand("setpos_player 1 -9896 -4400 1960.031; setpos_player 2 -10056 -4400 1960.031", true);
 					sv_cheats.SetValue(sv_cheats.GetString());
 					g_cutsceneskipdone = true;
 				}
@@ -264,7 +264,7 @@ ON_EVENT(PRE_TICK) {
 			case 5:
 				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 3047) {
 					sv_cheats.ThisPtr()->m_nValue = 1;
-					engine->ExecuteCommand("cmd1 setpos_exact -9896 -4400 936.031; cmd2 setpos_exact -10056 -4400 936.031", true);
+					engine->ExecuteCommand("setpos_player 1 -9896 -4400 936.031; setpos_player 2 -10056 -4400 936.031", true);
 					sv_cheats.SetValue(sv_cheats.GetString());
 					g_cutsceneskipdone = true;
 				}
@@ -280,7 +280,7 @@ ON_EVENT(PRE_TICK) {
 			case 7:
 				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 3047) {
 					sv_cheats.ThisPtr()->m_nValue = 1;
-					engine->ExecuteCommand("cmd1 setpos_exact -9896 -4400 936.031; cmd2 setpos_exact -10056 -4400 936.031; ent_fire relay_ping_2_move_on Trigger; sar_toast_create speedrun \"Speedrun *could* start now\"", true);
+					engine->ExecuteCommand("setpos_player 1 -9896 -4400 936.031; setpos_player 2 -10056 -4400 936.031; ent_fire relay_ping_2_move_on Trigger; sar_toast_create speedrun \"Speedrun *could* start now\"", true);
 					sv_cheats.SetValue(sv_cheats.GetString());
 					g_cutsceneskipdone = true;
 				}
@@ -388,19 +388,25 @@ int SpeedrunTimer::GetSegmentTicks() {
 			if (g_speedrun.lastMap == "sp_a2_bts6") return 3112;
 			else if (g_speedrun.lastMap == "sp_a3_00") return 4666;
 			else if (g_speedrun.lastMap == "mp_coop_start" && !engine->IsOrange()) {
+				// this will be retimed.
+				// concerningly, looking at an entity input dump of the
+				// calibration sequence reveals an inconsistent up to 3-tick
+				// difference in the time at which glados starts talking. Also
+				// the offsets specified here give around 0.5 penalty rn afaict
+				// See https://gist.github.com/ThisAMJ/bd232039995169625591be0500c01107
 				switch (sar_speedrun_skip_cutscenes_method.GetInt()) {
 					case 1:
 					case 6:
 					case 7:
-						ticks += 2705;
+						ticks += 2705; // / 60 = 45.083, cam_gun_B.Enable(), >= 0.45 penalty
 						break;
 					case 2:
 					case 4:
-						ticks += 1403;
+						ticks += 1403; // / 60 = 23.383, @glados.RunScriptCode(GladosPlayVcd(32)), >= 0.633 penalty
 						break;
 					case 3:
 					case 5:
-						ticks += 2085;
+						ticks += 2085; // / 60 = 34.75, @glados.RunScriptCode(GladosPlayVcd(34)), >= 0.783 penalty
 						break;
 				}
 			}
