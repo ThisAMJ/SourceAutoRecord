@@ -396,17 +396,19 @@ int SpeedrunTimer::GetSegmentTicks() {
 				// See https://gist.github.com/ThisAMJ/bd232039995169625591be0500c01107
 				switch (sar_speedrun_skip_cutscenes_method.GetInt()) {
 					case 1:
-					case 6:
-					case 7:
-						ticks += 2705; // / 60 = 45.083, cam_gun_B.Enable(), >= 0.45 penalty
+						ticks += 2705; // 45.083, cam_gun_B.Enable(), >= 0.450 penalty
 						break;
 					case 2:
 					case 4:
-						ticks += 1403; // / 60 = 23.383, @glados.RunScriptCode(GladosPlayVcd(32)), >= 0.633 penalty
+						ticks += 1403; // 23.383, @glados.RunScriptCode(GladosPlayVcd(32)), >= 0.633 penalty
 						break;
 					case 3:
 					case 5:
-						ticks += 2085; // / 60 = 34.75, @glados.RunScriptCode(GladosPlayVcd(34)), >= 0.783 penalty
+						ticks += 2085; // 34.750, @glados.RunScriptCode(GladosPlayVcd(34)), >= 0.783 penalty
+						break;
+					case 6:
+					case 7:
+						ticks += 2560; // 42.667, relay_ping_2_move_on.Trigger(), >= 0.500 penalty
 						break;
 				}
 			}
