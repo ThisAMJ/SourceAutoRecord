@@ -228,7 +228,7 @@ void InitSpeedrunCategoriesTo(std::map<std::string, SpeedrunCategory> *cats, std
 		*defaultCat = "Singleplayer";
 		*cats = {
 			{"Singleplayer", {{"Container Ride Start", "Vault Start", "Vault Save Start", "Moon Shot"}}},
-			{"Coop", {{"Coop Start", "Coop Blue Ping Start", "Coop Orange Ping Start", "Coop Fall Start", "Coop Course 5 End"}}},
+			{"Coop", {{"Coop Start", "Coop Blue Ping Start", "Coop Orange Ping Start", "Coop Orange Dropper Start", "Coop Fall Start", "Coop Course 5 End"}}},
 			{"Coop AC", {{"Coop Start", "Coop Blue Ping Start", "Coop Orange Ping Start", "Coop Orange Dropper Start", "Coop Fall Start", "Coop Course 6 End"}}},
 		};
 		*rules = {
