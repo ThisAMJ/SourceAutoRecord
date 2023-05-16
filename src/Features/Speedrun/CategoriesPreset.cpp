@@ -324,7 +324,7 @@ void InitSpeedrunCategoriesTo(std::map<std::string, SpeedrunCategory> *cats, std
 					}),
 			},
 			{
-				"Coop Orange Ping Start",
+				"Coop Orange Dropper Start",
 				SpeedrunRule(
 					RuleAction::START,
 					"mp_coop_start",
