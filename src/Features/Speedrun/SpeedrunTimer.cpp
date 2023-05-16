@@ -272,7 +272,7 @@ ON_EVENT(PRE_TICK) {
 			case 6:
 				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 940) {
 					sv_cheats.ThisPtr()->m_nValue = 1;
-					engine->ExecuteCommand("ent_fire relay_ping_2_move_on Trigger; sar_toast_create speedrun \"Speedrun *could* start now\"", true);
+					engine->ExecuteCommand("ent_fire relay_ping_2_move_on Trigger", true);
 					sv_cheats.SetValue(sv_cheats.GetString());
 					g_cutsceneskipdone = true;
 				}
@@ -280,7 +280,7 @@ ON_EVENT(PRE_TICK) {
 			case 7:
 				if (server->GetAbsOrigin(server->GetPlayer(1)).z < 3047) {
 					sv_cheats.ThisPtr()->m_nValue = 1;
-					engine->ExecuteCommand("setpos_player 1 -9896 -4400 936.031; setpos_player 2 -10056 -4400 936.031; ent_fire relay_ping_2_move_on Trigger; sar_toast_create speedrun \"Speedrun *could* start now\"", true);
+					engine->ExecuteCommand("setpos_player 1 -9896 -4400 936.031; setpos_player 2 -10056 -4400 936.031; ent_fire relay_ping_2_move_on Trigger", true);
 					sv_cheats.SetValue(sv_cheats.GetString());
 					g_cutsceneskipdone = true;
 				}
