@@ -309,7 +309,7 @@ DECL_AUTO_COMMAND_COMPLETION(sar_hud_order_bottom, (elementOrder))
 
 CON_COMMAND_F_COMPLETION(sar_hud_order_top, "sar_hud_order_top <name> - orders hud element to top\n", FCVAR_DONTRECORD, AUTOCOMPLETION_FUNCTION(sar_hud_order_top)) {
 	if (args.ArgC() != 2) {
-		return console->Print("Orders hud element to top: sar_hud_order_top <name>\n");
+		return console->Print(sar_hud_order_top.ThisPtr()->m_pszHelpString);
 	}
 
 	auto elements = &vgui->elements;
@@ -335,7 +335,7 @@ CON_COMMAND_F_COMPLETION(sar_hud_order_top, "sar_hud_order_top <name> - orders h
 }
 CON_COMMAND_F_COMPLETION(sar_hud_order_bottom, "sar_hud_order_bottom <name> - orders hud element to bottom\n", FCVAR_DONTRECORD, AUTOCOMPLETION_FUNCTION(sar_hud_order_bottom)) {
 	if (args.ArgC() != 2) {
-		return console->Print("Set!\n");
+		return console->Print(sar_hud_order_bottom.ThisPtr()->m_pszHelpString);
 	}
 
 	auto elements = &vgui->elements;
@@ -401,14 +401,6 @@ HUD_ELEMENT2_NO_DISABLE(text, HudType_InGame | HudType_Paused | HudType_Menu | H
 		}
 	}
 }
-
-Variable sar_hud_text("sar_hud_text", "", "DEPRECATED: Use sar_hud_set_text.\n", FCVAR_DONTRECORD);
-void sar_hud_text_callback(void *var, const char *pOldVal, float fOldVal) {
-	console->Print("WARNING: sar_hud_text is deprecated. Please use sar_hud_set_text instead.\n");
-	sar_hud_text_vals[0].draw = sar_hud_text.GetString()[0];
-	sar_hud_text_vals[0].components = {{{{255, 255, 255, 255}}, {sar_hud_text.GetString()}}};
-}
-
 
 // autocomplete function used for "setpos" commands.
 int HudSetPos_CompleteFunc(const char *partial, char commands[COMMAND_COMPLETION_MAXITEMS][COMMAND_COMPLETION_ITEM_LENGTH]) {
@@ -496,16 +488,7 @@ CON_COMMAND_F(sar_hud_set_text, "sar_hud_set_text <id> <text>... - sets and show
 		return;
 	}
 
-	const char *txt;
-
-	if (args.ArgC() == 3) {
-		txt = args[2];
-	} else {
-		txt = args.m_pArgSBuffer + args.m_nArgv0Size;
-		while (isspace(*txt)) ++txt;
-		txt += (*txt == '"') * 2 + strlen(args[1]);
-		while (isspace(*txt)) ++txt;
-	}
+	const char *txt = Utils::ArgContinuation(args, 2);
 
 	std::optional<Color> curColor;
 	std::string component = "";
@@ -520,7 +503,7 @@ CON_COMMAND_F(sar_hud_set_text, "sar_hud_set_text <id> <text>... - sets and show
 				++txt;
 				continue;
 			} else {
-				int r, g, b;
+				unsigned r, g, b;
 				int end = -1;
 				if (sscanf(txt, "%2x%2x%2x%n", &r, &g, &b, &end) == 3 && end == 6) {
 					txt += 6;

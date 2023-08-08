@@ -29,6 +29,7 @@ namespace Utils {
 	std::string GetSARPath();
 	std::optional<Color> GetColor(const char *str, bool to_linear = false);
 	Color HSVToRGB(float H, float S, float V);
+	const char *ArgContinuation(const CCommand &args, int from);
 }  // namespace Utils
 
 #define REDECL(name) \
@@ -43,5 +44,5 @@ namespace Utils {
 #if _WIN32
 #	define GO_THE_FUCK_TO_SLEEP(ms) Sleep(ms)
 #else
-#	define GO_THE_FUCK_TO_SLEEP(ms) usleep(ms * 1000)
+#	define GO_THE_FUCK_TO_SLEEP(ms) usleep((ms) * 1000)
 #endif

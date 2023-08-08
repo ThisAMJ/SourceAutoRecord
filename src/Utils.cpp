@@ -52,7 +52,7 @@ std::string Utils::ssprintf(const char *fmt, ...) {
 }
 uint8_t Utils::ConvertFromSrgb(uint8_t s) {
 	double s_ = (double)s / 255;
-	double l = s <= 0.04045 ? s_ / 12.92 : pow((s_ + 0.055) / 1.055, 2.4);
+	double l = s_ <= 0.04045 ? s_ / 12.92 : pow((s_ + 0.055) / 1.055, 2.4);
 	return (uint8_t)(l * 255);
 }
 std::string Utils::GetSARPath() {
@@ -85,7 +85,7 @@ std::optional<Color> Utils::GetColor(const char *str, bool to_linear) {
 	bool had_hash = str[0] == '#';
 	if (had_hash) ++str, --len;
 
-	int r, g, b, a;
+	unsigned r, g, b, a;
 	int end;
 
 	if (len == 8 && sscanf(str, "%2x%2x%2x%2x%n", &r, &g, &b, &a, &end) == 4 && end >= 8) {
@@ -136,4 +136,20 @@ Color Utils::HSVToRGB(float H, float S, float V) {
 	int B = (b + m) * 255;
 
 	return Color(R, G, B);
+}
+const char *Utils::ArgContinuation(const CCommand &args, int from) {
+	const char *text;
+
+	if (args.ArgC() == from + 1) {
+		text = args[from];
+	} else {
+		text = args.m_pArgSBuffer + args.m_nArgv0Size;
+		if (from > 1) while (isspace(*text)) ++text;
+		for (int i = 1; i < from; i++) {
+			text += (*text == '"') * 2 + strlen(args[i]);
+			while (isspace(*text)) ++text;
+		}
+	}
+
+	return text;
 }

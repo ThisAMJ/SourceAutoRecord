@@ -909,6 +909,7 @@ CON_COMMAND(sar_coop_reset_progress, "sar_coop_reset_progress - resets all coop 
 	if (engine->IsCoop()) {
 		NetMessage::SendMsg(RESET_COOP_PROGRESS_MESSAGE_TYPE, nullptr, 0);
 		resetCoopProgress();
+		if (engine->IsSplitscreen()) Event::Trigger<Event::COOP_RESET_DONE>({});
 	}
 }
 CON_COMMAND(sar_give_fly, "sar_give_fly [n] - gives the player in slot n (0 by default) preserved crouchfly.\n") {
@@ -922,7 +923,7 @@ CON_COMMAND(sar_give_fly, "sar_give_fly [n] - gives the player in slot n (0 by d
 	}
 }
 CON_COMMAND(sar_give_betsrighter, "sar_give_betsrighter [n] - gives the player in slot n (0 by default) betsrighter.\n") {
-	if (args.ArgC() > 2) return console->Print(sar_give_fly.ThisPtr()->m_pszHelpString);
+	if (args.ArgC() > 2) return console->Print(sar_give_betsrighter.ThisPtr()->m_pszHelpString);
 	if (!sv_cheats.GetBool()) return console->Print("sar_give_betsrighter requires sv_cheats.\n");
 	int slot = args.ArgC() == 2 ? atoi(args[1]) : 0;
 	ServerEnt *player = server->GetPlayer(slot + 1);

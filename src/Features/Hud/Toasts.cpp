@@ -102,7 +102,7 @@ CON_COMMAND_F(sar_toast_tag_set_color, "sar_toast_tag_set_color <tag> <color> - 
 			++col;
 		}
 
-		int r, g, b;
+		unsigned r, g, b;
 		int end = -1;
 		if (sscanf(col, "%2x%2x%2x%n", &r, &g, &b, &end) != 3 || end != 6) {
 			return console->Print("Invalid color code '%s'\n", args[2]);
@@ -451,24 +451,24 @@ void ToastHud::Paint(int slot) {
 }
 
 CON_COMMAND_F(sar_toast_create, "sar_toast_create <tag> <text> - create a toast\n", FCVAR_DONTRECORD) {
-	if (args.ArgC() != 3) {
+	if (args.ArgC() < 3) {
 		console->Print(sar_toast_create.ThisPtr()->m_pszHelpString);
 		return;
 	}
+	
+	const char *txt = Utils::ArgContinuation(args, 2);
 
-	toastHud.AddToast(args[1], args[2]);
+	toastHud.AddToast(args[1], txt);
 }
 
 CON_COMMAND_F(sar_toast_net_create, "sar_toast_net_create <tag> <text> - create a toast, also sending it to your coop partner\n", FCVAR_DONTRECORD) {
-	if (args.ArgC() != 3) {
+	if (args.ArgC() < 3) {
 		console->Print(sar_toast_net_create.ThisPtr()->m_pszHelpString);
 		return;
 	}
 
-	const char *tag = args[1], *toast = args[2];
+	const char *tag = args[1], *toast = Utils::ArgContinuation(args, 2);
 
-	// FIXME: this currently abuses the fact that we receive our own
-	// NetMessages, which is definitely a bug
 	if (engine->IsCoop()) {
 		size_t tagLen = strlen(tag), toastLen = strlen(toast);
 		size_t len = tagLen + toastLen + 2;
@@ -479,9 +479,8 @@ CON_COMMAND_F(sar_toast_net_create, "sar_toast_net_create <tag> <text> - create 
 		data[tagLen + 1 + toastLen] = 0;
 		NetMessage::SendMsg(TOAST_PACKET_TYPE, data, len);
 		free(data);
-	} else {
-		toastHud.AddToast(tag, toast);
 	}
+	toastHud.AddToast(tag, toast);
 }
 
 CON_COMMAND_F(sar_toast_dismiss_all, "sar_toast_dismiss_all - dismiss all active toasts\n", FCVAR_DONTRECORD) {
