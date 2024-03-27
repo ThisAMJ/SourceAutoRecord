@@ -69,6 +69,7 @@ REDECL(Client::GetButtonBits);
 REDECL(Client::ApplyMouse);
 REDECL(Client::SteamControllerMove);
 REDECL(Client::playvideo_end_level_transition_callback);
+REDECL(Client::playvideo_exitcommand_nointerrupt_callback);
 REDECL(Client::openleaderboard_callback);
 REDECL(Client::closeleaderboard_callback);
 REDECL(Client::OverrideView);
@@ -577,6 +578,14 @@ DETOUR_COMMAND(Client::playvideo_end_level_transition) {
 	return Client::playvideo_end_level_transition_callback(args);
 }
 
+DETOUR_COMMAND(Client::playvideo_exitcommand_nointerrupt) {
+	// If Orange has skip_cutscenes but Blue doesn't
+	if (sar_speedrun_skip_cutscenes.GetBool() && !strcmp(args.m_pArgSBuffer, "playvideo_exitcommand_nointerrupt coop_intro end_movie playmovie_connect_intro")) {
+		return;
+	}
+	return Client::playvideo_exitcommand_nointerrupt_callback(args);
+}
+
 DETOUR_T(void, Client::OverrideView, CViewSetup *m_View) {
 	Client::OverrideView(thisptr, m_View);
 
@@ -776,6 +785,7 @@ bool Client::Init() {
 			}
 
 			Command::Hook("playvideo_end_level_transition", Client::playvideo_end_level_transition_callback_hook, Client::playvideo_end_level_transition_callback);
+			Command::Hook("playvideo_exitcommand_nointerrupt", Client::playvideo_exitcommand_nointerrupt_callback_hook, Client::playvideo_exitcommand_nointerrupt_callback);
 			Command::Hook("+leaderboard", Client::openleaderboard_callback_hook, Client::openleaderboard_callback);
 			Command::Hook("unpause", Client::closeleaderboard_callback_hook, Client::closeleaderboard_callback);
 		}
@@ -898,6 +908,7 @@ void Client::Shutdown() {
 	Interface::Delete(this->g_HudSaveStatus);
 	Interface::Delete(this->g_GameMovement);
 	Command::Unhook("playvideo_end_level_transition", Client::playvideo_end_level_transition_callback);
+	Command::Unhook("playvideo_exitcommand_nointerrupt", Client::playvideo_exitcommand_nointerrupt_callback);
 	Command::Unhook("+leaderboard", Client::openleaderboard_callback);
 	Command::Unhook("unpause", Client::closeleaderboard_callback);
 }

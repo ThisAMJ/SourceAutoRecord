@@ -265,8 +265,8 @@ void InitSpeedrunCategoriesTo(std::map<std::string, SpeedrunCategory> *cats, std
 		*defaultCat = "Singleplayer";
 		*cats = {
 			{"Singleplayer", {{"Container Ride Start", "Vault Start", "Vault Save Start", "Moon Shot"}}},
-			{"Coop", {{"Coop Start", "Coop Course 5 End"}}},
-			{"Coop AC", {{"Coop Start", "Coop Course 6 End"}}},
+			{"Coop", {{"Coop Start", "Coop Blue Ping Start", "Coop Orange Ping Start", "Coop Orange Dropper Start", "Coop Fall Start", "Coop Course 5 End"}}},
+			{"Coop AC", {{"Coop Start", "Coop Blue Ping Start", "Coop Orange Ping Start", "Coop Orange Dropper Start", "Coop Fall Start", "Coop Course 6 End"}}},
 		};
 		*rules = {
 			{
@@ -328,7 +328,59 @@ void InitSpeedrunCategoriesTo(std::map<std::string, SpeedrunCategory> *cats, std
 					"mp_coop_start",
 					EntityInputRule{
 						ENTRULE_TARGETNAME,
-						"teleport_start",
+						"playmovie_connect_intro",
+						"",
+						"__MovieFinished",
+						"",
+					}),
+			},
+			{
+				"Coop Blue Ping Start",
+				SpeedrunRule(
+					RuleAction::START,
+					"mp_coop_start",
+					EntityInputRule{
+						ENTRULE_TARGETNAME,
+						"@glados",
+						"",
+						"RunScriptCode",
+						"GladosPlayVcd(32)",
+					}),
+			},
+			{
+				"Coop Orange Ping Start",
+				SpeedrunRule(
+					RuleAction::START,
+					"mp_coop_start",
+					EntityInputRule{
+						ENTRULE_TARGETNAME,
+						"@glados",
+						"",
+						"RunScriptCode",
+						"GladosPlayVcd(34)",
+					}),
+			},
+			{
+				"Coop Orange Dropper Start",
+				SpeedrunRule(
+					RuleAction::START,
+					"mp_coop_start",
+					EntityInputRule{
+						ENTRULE_TARGETNAME,
+						"relay_ping_2_move_on",
+						"",
+						"Trigger",
+						"",
+					}),
+			},
+			{
+				"Coop Fall Start",
+				SpeedrunRule(
+					RuleAction::START,
+					"mp_coop_start",
+					EntityInputRule{
+						ENTRULE_TARGETNAME,
+						"cam_gun_B",
 						"",
 						"Enable",
 						"",

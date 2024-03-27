@@ -217,18 +217,41 @@ ON_EVENT(SESSION_START) {
 		case SourceGame_Portal2:
 			if (Game::IsSpeedrunMod()) return;
 
+			sv_cheats.ThisPtr()->m_nValue = 1;
 			if (SpeedrunTimer::IsRunning()) {
 				// HACKHACK: Since Any% enters Tube Ride via wrongwarp, skip_cutscenes
 				// doesn't work as ent_fire is restricted in CM. Workaround by
 				// temporarily setting cheats
-				sv_cheats.ThisPtr()->m_nValue = 1;
 				if (g_speedrun.lastMap == "sp_a2_bts6") {
 					engine->ExecuteCommand("ent_fire @exit_teleport Teleport", true);
 				} else if (g_speedrun.lastMap == "sp_a3_00") {
 					engine->ExecuteCommand("ent_fire speedmod kill; ent_fire bottomless_pit_teleport Teleport", true);
 				}
-				sv_cheats.SetValue(sv_cheats.GetString());
+			} else {
+				if (engine->GetCurrentMapName() == "mp_coop_start") {
+					engine->ExecuteCommand("ent_fire teleport_start enable; ent_fire playmovie_connect_intro kill; ent_fire relay_start_glados_coop kill; ent_fire_pclip_tube_block_3 kill", true);
+					switch (sar_speedrun_skip_cutscenes_method.GetInt()) {
+						case 1: 
+							engine->ExecuteCommand("ent_fire pclip_tube_block_1 kill; ent_fire pclip_tube_block_2 kill", true);
+							break;
+						case 2:
+						case 4:
+							engine->ExecuteCommand("ent_fire script_ping_select_test RunScriptCode \"SelectChoicesBlueStart()\"", true);
+							break;
+						case 3:
+						case 5:
+							engine->ExecuteCommand("ent_fire pclip_tube_block_1 kill; ent_fire script_ping_select_test RunScriptCode \"SelectChoicesOrangeStart()\"", true);
+							break;
+						case 6:
+						case 7:
+							engine->ExecuteCommand("ent_fire pclip_tube_block_1 kill", true);
+							break;
+						default:
+							break;
+					}
+				}
 			}
+			sv_cheats.SetValue(sv_cheats.GetString());
 			break;
 		default:
 			break;
@@ -240,18 +263,51 @@ ON_EVENT(PRE_TICK) {
 	if (!sar_speedrun_skip_cutscenes.GetBool()) return;
 	if (engine->IsOrange()) return;
 
+	auto player = server->GetPlayer(1);
+	if (!player) return;
+
 	if (engine->GetCurrentMapName() == "mp_coop_pr_cubes") {
 		if (g_orangeReady && entityList->GetEntityInfoByName("start_movie") != NULL) {
 			if (!sv_cheats.GetBool()) sv_cheats.SetValue(2); // mod is bad so we shouldn't reset cheats after
 			engine->ExecuteCommand("ent_fire start_movie kill; ent_fire vc_blue disable; ent_fire vc_orange disable; ent_fire @tp_blue enable; ent_fire @tp_orange enable; ent_fire rt_stop_sounds kill", true);
 		}
-		auto player = server->GetPlayer(1);
-		if (player) {
-			auto originZ = server->GetAbsOrigin(player).z;
-			if (originZ < 3518 && originZ > 3400) {
-				engine->ExecuteCommand("ent_fire prop_iris_1 SetAnimation item_dropper_open", true);
+
+		auto originZ = server->GetAbsOrigin(player).z;
+		if (originZ < 3518 && originZ > 3400) {
+			engine->ExecuteCommand("ent_fire prop_iris_1 SetAnimation item_dropper_open", true);
+			g_cutsceneskipdone = true;
+		}
+
+	} else if (engine->GetCurrentMapName() == "mp_coop_start") {
+		auto originZ = server->GetAbsOrigin(player).z;
+		auto zComp = 0;
+		auto cmd = "";
+		switch (sar_speedrun_skip_cutscenes_method.GetInt()) {
+			case 4:
+				zComp = 3047;
+				cmd = "setpos_player 1 -9896 -4400 1960.031; setpos_player 2 -10056 -4400 1960.031";
+				break;
+			case 5:
+				zComp = 3047;
+				cmd = "setpos_player 1 -9896 -4400 936.031; setpos_player 2 -10056 -4400 936.031";
+				break;
+			case 6:
+				zComp = 940;
+				cmd = "ent_fire relay_ping_2_move_on Trigger";
+				break;
+			case 7:
+				zComp = 3047;
+				cmd = "setpos_player 1 -9896 -4400 936.031; setpos_player 2 -10056 -4400 936.031; ent_fire relay_ping_2_move_on Trigger";
+				break;
+			default:
 				g_cutsceneskipdone = true;
-			}
+				break;
+		}
+		if (zComp != 0 && originZ < zComp) {
+			sv_cheats.ThisPtr()->m_nValue = 1;
+			engine->ExecuteCommand(cmd, true);
+			sv_cheats.SetValue(sv_cheats.GetString());
+			g_cutsceneskipdone = true;
 		}
 	}
 }
@@ -846,6 +902,7 @@ float SpeedrunTimer::UnFormat(const std::string &formatted_time) {
 
 // }}}
 
+Variable sar_speedrun_skip_cutscenes_method("sar_speedrun_skip_cutscenes_method", "1", 1, 7, "Method to use when skipping Calibration cutscene.\n0 = Skip video\n1 = Fall through\n2 = Blue ping (fall)\n3 = Orange ping (fall)\n4 = Blue ping (tp)\n5 = Orange ping (tp)\n6 = Fall to orange then fall through\n7 = TP to orange then fall through\n");
 Variable sar_speedrun_skip_cutscenes("sar_speedrun_skip_cutscenes", "0", "Skip Tube Ride and Long Fall in Portal 2.\n");
 Variable sar_speedrun_smartsplit("sar_speedrun_smartsplit", "1", "Only split the speedrun timer a maximum of once per map.\n");
 Variable sar_speedrun_time_pauses("sar_speedrun_time_pauses", "0", "Include time spent paused in the speedrun timer.\n");

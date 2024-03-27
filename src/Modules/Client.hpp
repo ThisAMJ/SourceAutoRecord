@@ -126,6 +126,7 @@ public:
 	DECL_DETOUR_T(void, OverrideView, CViewSetup *m_View);
 
 	DECL_DETOUR_COMMAND(playvideo_end_level_transition);
+	DECL_DETOUR_COMMAND(playvideo_exitcommand_nointerrupt);
 	DECL_DETOUR_COMMAND(openleaderboard);
 	DECL_DETOUR_COMMAND(closeleaderboard);
 
